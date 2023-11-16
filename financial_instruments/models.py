@@ -7,9 +7,9 @@ class Bank(models.Model):
 
 
 class Deposit(models.Model):
-    deposit_code = models.CharField(max_length=20)
+    deposit_code = models.CharField(max_length=20)#fin_prdt_cd 
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20)#fin_prdt_nm
     dcls_month = models.CharField(max_length=20)
     join_way = models.CharField(max_length=20)
     mtrt_int = models.TextField(blank=True)
@@ -21,9 +21,9 @@ class Deposit(models.Model):
 
 
 class Saving(models.Model):
-    saving_code = models.CharField(max_length=20)
+    saving_code = models.CharField(max_length=20)#fin_prdt_cd 
     bank = models.ForeignKey(Bank, on_delete=models.CASCADE)
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20)#fin_prdt_nm
     dcls_month = models.CharField(max_length=20)
     join_way = models.CharField(max_length=20)
     mtrt_int = models.TextField(blank=True)
@@ -36,10 +36,21 @@ class Saving(models.Model):
 
 class DepositOption(models.Model):
     deposit = models.ForeignKey(Deposit, on_delete=models.CASCADE)
-    intr_rate_type_nm = models.CharField(max_length=10)
+    intr_rate_type_nm = models.CharField(max_length=2)
     save_trm = models.CharField(max_length=3)
     intr_rate = models.FloatField()
     intr_rate2 = models.FloatField()
+
+
+class SavingOption(models.Model):
+    saving = models.ForeignKey(Saving, on_delete=models.CASCADE)
+    intr_rate_type_nm = models.CharField(max_length=2)
+    rsrv_type_nm = models.CharField()
+    save_trm = models.CharField(max_length=3)
+    intr_rate = models.FloatField()
+    intr_rate2 = models.FloatField()
+
+
 
 
 
