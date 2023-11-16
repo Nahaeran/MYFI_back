@@ -12,6 +12,6 @@ class User(AbstractUser):
     salary = models.IntegerField(blank=True, null=True)
     is_superuser = models.BooleanField(default=False)
 
-    USERNAME_FIELD = 'username'
+    USERNAME_FIELD = 'name'
 
 
