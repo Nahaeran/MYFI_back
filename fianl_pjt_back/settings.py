@@ -76,6 +76,23 @@ REST_FRAMEWORK = {
     # ],
 }
 
+#사용자 수정
+AUTH_USER_MODEL = 'accounts.User'
+
+# 이메일 필드 필수 아니게
+ACCOUNT_EMAIL_REQUIRED = False
+# 이메일 확인절차 없어짐
+ACCOUNT_EMAIL_VERIFICATION = None
+
+AUTHENTICATION_BACKENDS = (
+# django 기본 인증 백엔드
+"django.contrib.auth.backends.ModelBackend",
+# django-allauth 패키지에서 제공하는 인증 백엔드 클래스.
+"allauth.account.auth_backends.AuthenticationBackend",
+)
+
+
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
