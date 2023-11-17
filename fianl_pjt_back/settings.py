@@ -32,6 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'accounts',
+    'articles',
     'rest_framework',
     'rest_framework.authtoken',
     'dj_rest_auth',
@@ -71,10 +72,10 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    # # permission
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.AllowAny',
-    # ],
+    # permission
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
