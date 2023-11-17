@@ -79,6 +79,11 @@ REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+}
+
+
 SPECTACULAR_SETTINGS = {
     'TITLE': 'MYFI API',
     'DESCRIPTION': 'MYFI description',
@@ -95,6 +100,8 @@ AUTH_USER_MODEL = 'accounts.User'
 ACCOUNT_EMAIL_REQUIRED = False
 # 이메일 확인절차 없어짐
 ACCOUNT_EMAIL_VERIFICATION = None
+#account 어댑터 설정
+ACCOUNT_ADAPTER = 'accounts.models.CustomAccountAdapter'
 
 AUTHENTICATION_BACKENDS = (
 # django 기본 인증 백엔드
