@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post
+from .models import Post, Comment
 
 
 class PostListSerializer(serializers.ModelSerializer):
@@ -16,9 +16,9 @@ class PostSerializer(serializers.ModelSerializer):
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Post
+        model = Comment
         fields = '__all__'
-        read_only_fields = ('user',)
+        read_only_fields = ('post',)
 
 
 
