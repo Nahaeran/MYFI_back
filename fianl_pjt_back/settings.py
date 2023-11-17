@@ -44,6 +44,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'accounts',
+    'articles',
     'financial_instruments',
     'rest_framework',
     'rest_framework.authtoken',
@@ -84,12 +85,18 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    # # permission
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.AllowAny',
-    # ],
+    # permission
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
+
+
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+}
+
 
 SPECTACULAR_SETTINGS = {
     'TITLE': 'MYFI API',
@@ -103,6 +110,8 @@ SPECTACULAR_SETTINGS = {
 #사용자 수정
 AUTH_USER_MODEL = 'accounts.User'
 
+#account 어댑터 설정
+ACCOUNT_ADAPTER = 'accounts.models.CustomAccountAdapter'
 # 이메일 필드 필수 아니게
 ACCOUNT_EMAIL_REQUIRED = False
 # 이메일 확인절차 없어짐

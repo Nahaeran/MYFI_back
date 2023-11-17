@@ -13,6 +13,7 @@ from .models import Post, Comment
 
 
 # Create your views here.
+# 전체 게시글 조회 및 게시글 생성
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticated])
 def post_list(request):
@@ -26,83 +27,33 @@ def post_list(request):
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
+
+#단일 게시글 조회,삭제 및 수정 및 조회
+@api_view(['GET','PUT','DELETE'])
 def post_detail(request, post_pk):
-    post = get_object_or_404(Post, pk=post_pk)
+    if request.user.is_authenticated:
+        if request.method == 'GET':
+            post = get_object_or_404(Post, pk=post_pk)
+            serializer = PostSerializer(post)
+            return Response(serializer.data)
 
-    if request.method == 'GET':
-        serializer = PostSerializer(post)
-        return Response(serializer.data)
+        elif request.method == 'DELETE':
+            post = get_object_or_404(Post, pk=post_pk)
+            if request.user == post.user:
+                post.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        
+        elif request.method == 'PUT':
+            post = get_object_or_404(Post, pk=post_pk)
+            serializer = PostSerializer(instance=post, data=request.data)
 
-
-# @login_required
-# def create(request):
-#     if request.method == 'POST':
-#         form = PostForm(request.POST)
-#         if form.is_valid():
-#             article = form.save(commit=False)
-#             article.user = request.user
-#             form.save()
-#             return redirect('articles:detail', article.pk)
-#     else:
-#         form = PostForm()
-#     context = {
-#         'form': form,
-#     }
-#     return render(request, 'articles/create.html', context)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response(status=status.HTTP_200_OK)
+                
 
 
-# @login_required
-# def delete(request, pk):
-#     article = Post.objects.get(pk=pk)
-#     if request.user == article.user:
-#         article.delete()
-#     return redirect('articles:index')
-
-
-# @login_required
-# def update(request, pk):
-#     article = Post.objects.get(pk=pk)
-#     if request.user == article.user:
-#         if request.method == 'POST':
-#             form = PostForm(request.POST, instance=article)
-#             if form.is_valid:
-#                 form.save()
-#                 return redirect('articles:detail', article.pk)
-#         else:
-#             form = PostForm(instance=article)
-#     else:
-#         return redirect('articles:index')
-#     context = {
-#         'article': article,
-#         'form': form,
-#     }
-#     return render(request, 'articles/update.html', context)
-
-
-# @login_required
-# def comments_create(request, pk):
-#     article = Post.objects.get(pk=pk)
-#     comment_form = CommentForm(request.POST)
-#     if comment_form.is_valid():
-#         comment = comment_form.save(commit=False)
-#         comment.article = article
-#         comment.user = request.user
-#         comment_form.save()
-#         return redirect('articles:detail', article.pk)
-#     context = {
-#         'article': article,
-#         'comment_form': comment_form,
-#     }
-#     return render(request, 'articles/detail.html', context)
-
-
-# @login_required
-# def comments_delete(request, article_pk, comment_pk):
-#     comment = Comment.objects.get(pk=comment_pk)
-#     if request.user == comment.user:
-#         comment.delete()
-#     return redirect('articles:detail', article_pk)
 
