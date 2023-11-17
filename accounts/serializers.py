@@ -4,6 +4,8 @@ from allauth.utils import get_username_max_length
 from allauth.account.adapter import get_adapter
 from .models import User
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from dj_rest_auth.serializers import LoginSerializer
+
 class CustomRegisterSerializer(RegisterSerializer):
     # 추가할 필드들을 정의합니다.
     username = serializers.CharField(
