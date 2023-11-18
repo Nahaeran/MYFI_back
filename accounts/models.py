@@ -7,7 +7,7 @@ class User(AbstractUser):
     username = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=300, blank=True, null=True)
-    profile_img = models.ImageField(blank=True, null=True)
+    profile_img = models.ImageField(upload_to='image/', default='image/user.png')
     financial_products = models.TextField(blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
     money = models.IntegerField(blank=True, null=True)

@@ -95,6 +95,7 @@ REST_FRAMEWORK = {
 
 REST_AUTH = {
     'REGISTER_SERIALIZER': 'accounts.serializers.CustomRegisterSerializer',
+    # 'LOGIN_SERIALIZER': 'accounts.serializers.CustomLoginSerializer',
 }
 
 
@@ -187,6 +188,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+
+MEDIA_URL = 'media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'
 
 TIME_ZONE = 'UTC'
 

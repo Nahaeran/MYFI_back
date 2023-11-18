@@ -6,22 +6,6 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from .serializers import UserProfileSerializer, UserInfoSerializer
 
-# Create your views here.
-# @api_view(['GET', 'POST'])
-# @permission_classes([IsAuthenticated])
-# def user_profile(request, username):
-#     if request.method == 'GET':
-#         posts = get_list_or_404(Post)
-#         serializer = PostListSerializer(posts, many=True)
-#         return Response(serializer.data)
-
-#     elif request.method == 'POST':
-#         serializer = PostSerializer(data=request.data)
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save(user=request.user)
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
