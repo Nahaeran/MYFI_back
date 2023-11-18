@@ -33,6 +33,23 @@ class CustomRegisterSerializer(RegisterSerializer):
         self.cleaned_data = self.get_cleaned_data()
         adapter.save_user(request, user, self)
         self.custom_signup(request, user)
-        return user
+        return 
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('profile_img', 'id', 'username', 'name', 'email', 'age', 'money', 'salary')
+        read_only_fields = ('id','username', 'name',)
+
+
+class UserInfoSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = User
+            fields = ('profile_img', 'id', 'username', 'name', 'email', 'age', 'money', 'salary', 'financial_products')
+            read_only_fields = ('id','username', 'name',)
+     
+
+
 
 

@@ -6,8 +6,8 @@ from allauth.account.adapter import DefaultAccountAdapter
 class User(AbstractUser):
     username = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=50)
-    email = models.EmailField(max_length=300)
-    progile_img = models.ImageField(blank=True, null=True)
+    email = models.EmailField(max_length=300, blank=True, null=True)
+    profile_img = models.ImageField(blank=True, null=True)
     financial_products = models.TextField(blank=True, null=True)
     age = models.IntegerField(blank=True, null=True)
     money = models.IntegerField(blank=True, null=True)
@@ -30,7 +30,7 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         first_name = data.get("first_name")
         last_name = data.get("last_name")
         email = data.get("email")
-        progile_img = data.get("")
+        profile_img = data.get("profile_img")
         financial_product = data.get("financial_products")
         age = data.get("age")
         money = data.get("money")
@@ -45,8 +45,8 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             user_field(user, "last_name", last_name)
         if name:
             user_field(user, "name", name)
-        if progile_img:
-            user.progile_img = progile_img
+        if profile_img:
+            user.profile_img = profile_img
         if age:
             user.age = age
         if money:
