@@ -10,6 +10,8 @@ from django.shortcuts import get_object_or_404, get_list_or_404
 
 from .serializers import PostListSerializer, PostSerializer, CommentSerializer
 from .models import Post, Comment
+from django.contrib.auth import get_user_model
+
 
 
 # Create your views here.
@@ -53,6 +55,15 @@ def post_detail(request, post_pk):
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
+            
+
+#사용자 이름에 해당하는 사용자의 포스트 목록 조회
+@api_view(['GET'])
+def user_post_list(request, username):
+    user = get_object_or_404(get_user_model(), username=username)
+    user_posts = user.post_set.all()
+    serializer = PostSerializer(user_posts, many=True)
+    return Response(serializer.data)
         
        
 @api_view(['GET','POST'])
