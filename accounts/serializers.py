@@ -4,6 +4,7 @@ from allauth.utils import get_username_max_length
 from allauth.account.adapter import get_adapter
 from .models import User
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from dj_rest_auth.serializers import LoginSerializer 
 
 
 class CustomRegisterSerializer(RegisterSerializer):
@@ -21,7 +22,7 @@ class CustomRegisterSerializer(RegisterSerializer):
         return {
             'username': self.validated_data.get('username', ''),
             'password1': self.validated_data.get('password1', ''),
-            'password2': self.validated_data.get('password1', ''),
+            'password2': self.validated_data.get('password2', ''),
             'name': self.validated_data.get('name', ''),
             'email': self.validated_data.get('email', ''),
         }
@@ -33,3 +34,5 @@ class CustomRegisterSerializer(RegisterSerializer):
         adapter.save_user(request, user, self)
         self.custom_signup(request, user)
         return user
+
+

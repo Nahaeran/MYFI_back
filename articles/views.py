@@ -74,7 +74,7 @@ def comment_list(request,post_pk):
 
 #단일 댓글 조회,삭제 및 수정 및 조회
 @api_view(['GET','PUT','DELETE'])
-def comment_detail(request, comment_pk):
+def comment_detail(request, post_pk, comment_pk):
     if request.user.is_authenticated:
         if request.method == 'GET':
             comment = get_object_or_404(Comment, pk=comment_pk)
