@@ -1,10 +1,8 @@
 from rest_framework import serializers
-from allauth.account import app_settings as allauth_settings
-from allauth.utils import get_username_max_length
 from allauth.account.adapter import get_adapter
 from .models import User
 from dj_rest_auth.registration.serializers import RegisterSerializer
-from dj_rest_auth.serializers import LoginSerializer 
+
 
 
 class CustomRegisterSerializer(RegisterSerializer):
