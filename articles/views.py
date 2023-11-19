@@ -12,51 +12,54 @@ from .serializers import PostListSerializer, PostSerializer, CommentSerializer
 from .models import Post, Comment
 
 
-
-
-# Create your views here.
 # 전체 게시글 조회 및 게시글 생성
 @api_view(['GET', 'POST'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def post_list(request):
     if request.method == 'GET':
-        posts = get_list_or_404(Post)
+        posts = Post.objects.all()
         serializer = PostListSerializer(posts, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+        if request.user.is_authenticated:
+            serializer = PostSerializer(data=request.data)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({ "detail": "Authentication credentials were not provided." }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 #단일 게시글 조회,삭제 및 수정 및 조회
 @api_view(['GET','PUT','DELETE'])
+# @permission_classes([IsAuthenticated])
 def post_detail(request, post_pk):
-    if request.user.is_authenticated:
-        if request.method == 'GET':
-            post = get_object_or_404(Post, pk=post_pk)
-            serializer = PostSerializer(post)
-            return Response(serializer.data)
+    post = get_object_or_404(Post, pk=post_pk)
+    if request.method == 'GET':
+        serializer = PostSerializer(post)
+        return Response(serializer.data)
 
-        elif request.method == 'DELETE':
-            post = get_object_or_404(Post, pk=post_pk)
+    elif request.method == 'DELETE':
+        if request.user.is_authenticated:
             if request.user == post.user:
                 post.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        
-        elif request.method == 'PUT':
-            post = get_object_or_404(Post, pk=post_pk)
-            serializer = PostSerializer(instance=post, data=request.data)
+        else:
+            return Response({ "detail": "Authentication credentials were not provided." }, status=status.HTTP_401_UNAUTHORIZED)
+
+    elif request.method == 'PUT':
+        if request.user.is_authenticated:
+            serializer = PostSerializer(instance=post, data=request.data, partial=True)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-            
+        else:
+            return Response({ "detail": "Authentication credentials were not provided." }, status=status.HTTP_401_UNAUTHORIZED)
 
+            
 #사용자 이름에 해당하는 사용자의 포스트 목록 조회
 @api_view(['GET'])
 def user_post_list(request, username):
@@ -67,56 +70,49 @@ def user_post_list(request, username):
         
        
 @api_view(['GET','POST'])
-@permission_classes([IsAuthenticated])
-def comment_list(request,post_pk):
+# @permission_classes([IsAuthenticated])
+def comment_list(request, post_pk):
     post = get_object_or_404(Post,pk=post_pk)
-
+    
     if request.method=='GET':
         comments = post.comment_set.all()
         serializer=CommentSerializer(comments,many=True)
         return Response(serializer.data)
     
     elif request.method=="POST":
-        serializer = CommentSerializer(data=request.data) #1
-        if serializer.is_valid(raise_exception=True): #2
-            serializer.save(post=post) 
-        return Response(serializer.data,status=status.HTTP_201_CREATED)
+        if request.user.is_authenticated:
+            serializer = CommentSerializer(data=request.data) #1
+            if serializer.is_valid(raise_exception=True): #2
+                serializer.save(post=post, user=request.user) 
+            return Response(serializer.data,status=status.HTTP_201_CREATED)
+        else:
+            return Response({ "detail": "Authentication credentials were not provided." }, status=status.HTTP_401_UNAUTHORIZED)
 
 
 #단일 댓글 조회,삭제 및 수정 및 조회
 @api_view(['GET','PUT','DELETE'])
+@permission_classes([IsAuthenticated])
 def comment_detail(request, post_pk, comment_pk):
-    if request.user.is_authenticated:
-        if request.method == 'GET':
-            comment = get_object_or_404(Comment, pk=comment_pk)
-            serializer = CommentSerializer(comment)
-            return Response(serializer.data)
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    if request.method == 'GET':
+        serializer = CommentSerializer(comment)
+        return Response(serializer.data)
 
-        elif request.method == 'DELETE':
-            comment = get_object_or_404(Comment, pk=comment_pk)
-            if request.user == comment.user:
-                comment.delete()
+    elif request.method == 'DELETE':
+        if request.user == comment.user:
+            comment.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        
-        elif request.method == 'PUT':
-            comment = get_object_or_404(Comment, pk=comment_pk)
-            serializer = CommentSerializer(instance=comment, data=request.data)
+        else:
+            return Response({ "detail": "댓글 작성자와 사용자가 다릅니다." }, status=status.HTTP_401_UNAUTHORIZED)
+    
+    elif request.method == 'PUT':
+        if request.user == comment.user:
+            serializer = CommentSerializer(instance=comment, data=request.data, partial=True)
 
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-
-    
-
-
-
-
-
-    
-
-            
-
-                
-
+        else:
+            return Response({ "detail": "댓글 작성자와 사용자가 다릅니다."}, status=status.HTTP_401_UNAUTHORIZED)
 
 
