@@ -1,11 +1,15 @@
 from django.shortcuts import render
+from django.shortcuts import get_object_or_404
 from django.conf import settings
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
 import requests
 from .serializers import *
 from .models import *
 
 
-# DEPOSIT_API_URL = f'http://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json?auth={settings.API_KEY}&topFinGrpNo=020000&pageNo=1'
+# DEPOSIT_API_URL = f'http://finlife.fss.or.kr/finlifeapi/depositProductsSearch.json?auth={settings.API_KEY}&topFinGrpNo=020000&pageNo=1'
 # SAVING_API_URL = f'http://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json?auth={settings.API_KEY}&topFinGrpNo=020000&pageNo=1'
 
 # deposit_res = requests.get(DEPOSIT_API_URL).json()
@@ -87,3 +91,71 @@ from .models import *
 #     serializer = SavingOptionSerializer(data=save_option)
 #     if serializer.is_valid(raise_exception=True):
 #         serializer.save(saving=product)
+
+@api_view(['GET']) # id 순
+def deposit_list(request):
+    deposits = Deposit.objects.all()
+    serializer = DepositSerializer(deposits, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def deposit_detail(request, deposit_pk):
+    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+    if request.method == 'GET':
+        serializer = DepositSerializer(deposit)
+        return Response(serializer.data)    
+    
+
+@api_view(['GET'])
+def depositOption_list(request, deposit_pk):
+    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+    deposit_options = DepositOption.objects.filter(deposit=deposit)
+
+    if request.method == 'GET':
+        serializer = DepositOptionSerializer(deposit_options, many=True)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+def depositOption_detail(request, deposit_pk, depositOption_pk):
+    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+    deposit_option = get_object_or_404(DepositOption, pk=depositOption_pk, deposit=deposit)
+
+    if request.method == 'GET':
+        serializer = DepositOptionSerializer(deposit_option)
+        return Response(serializer.data)
+    
+
+@api_view(['GET']) # id 순
+def saving_list(request):
+    savings = Saving.objects.all()
+    serializer = SavingSerializer(savings, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def saving_detail(request, saving_pk):
+    saving = get_object_or_404(Deposit, pk=saving_pk)
+    if request.method == 'GET':
+        serializer = SavingSerializer(saving)
+        return Response(serializer.data)
+
+    
+@api_view(['GET'])
+def savingOption_list(request, saving_pk):
+    saving = get_object_or_404(Saving, pk=saving_pk)
+    saving_options = SavingOption.objects.filter(saving=saving)
+
+    if request.method == 'GET':
+        serializer = SavingOptionSerializer(saving_options, many=True)
+        return Response(serializer.data)
+
+
+@api_view(['GET'])
+def savingOption_detail(request, saving_pk, savingOption_pk):
+    savingOption = get_object_or_404(SavingOption, pk=savingOption_pk)
+    if request.method == 'GET':
+        serializer = SavingOptionSerializer(savingOption)
+        return Response(serializer.data)
+
