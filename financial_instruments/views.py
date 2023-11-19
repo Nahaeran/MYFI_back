@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.db.models import F
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -158,4 +159,20 @@ def savingOption_detail(request, saving_pk, savingOption_pk):
     if request.method == 'GET':
         serializer = SavingOptionSerializer(savingOption)
         return Response(serializer.data)
+    
+# 6개월~36개월
+@api_view(['GET'])
+def get_deposits(request, save_trm):
+    deposits = Deposit.objects.filter(depositoption__save_trm=save_trm).order_by('depositoption__intr_rate')
+
+    serializer = DepositSerializer(deposits, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def get_savings(request, save_trm):
+    savings = Saving.objects.filter(savingoption__save_trm=save_trm).order_by('savingoption__intr_rate')
+
+    serializer = SavingSerializer(savings, many=True)
+    return Response(serializer.data)
+
 
