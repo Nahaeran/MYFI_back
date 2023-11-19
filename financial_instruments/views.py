@@ -137,7 +137,7 @@ def saving_list(request):
 
 @api_view(['GET'])
 def saving_detail(request, saving_pk):
-    saving = get_object_or_404(Deposit, pk=saving_pk)
+    saving = get_object_or_404(Saving, pk=saving_pk)
     if request.method == 'GET':
         serializer = SavingSerializer(saving)
         return Response(serializer.data)
