@@ -193,7 +193,7 @@ def get_reverse_savings(request, save_trm):
     savings = Saving.objects.filter(savingoption__save_trm=save_trm).order_by('-savingoption__intr_rate')
 
     serializer = SavingSerializer(savings, many=True)
-    return Response()
+    return Response(serializer.data)
 
 
 @api_view(['PUT'])
@@ -261,3 +261,22 @@ def contract_saving(request, saving_code):
                 return Response({ "detail": "상품이 추가되었습니다." }, status=status.HTTP_200_OK)
         else:
             return Response({ "detail": "이미 상품이 존재합니다." }, status=status.HTTP_400_BAD_REQUEST)
+        
+
+@api_view(['GET'])
+def get_bank_deposit(request, kor_co_nm):
+    if Deposit.objects.filter(kor_co_nm=kor_co_nm).exists():
+        deposits = Deposit.objects.filter(kor_co_nm=kor_co_nm)
+        serializer = DepositSerializer(deposits, many=True)
+        return Response(serializer.data)
+    else:
+        return Response({ "detail": "해당은행의 상품이 없습니다.." }, status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET'])
+def get_bank_saving(request, kor_co_nm):
+    if Saving.objects.filter(kor_co_nm=kor_co_nm).exists():
+        savings = Saving.objects.filter(kor_co_nm=kor_co_nm)
+        serializer = SavingSerializer(savings, many=True)
+        return Response(serializer.data)
+    else:
+        return Response({ "detail": "해당은행의 상품이 없습니다.." }, status=status.HTTP_204_NO_CONTENT)
