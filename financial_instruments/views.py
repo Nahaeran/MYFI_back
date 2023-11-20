@@ -103,16 +103,16 @@ def deposit_list(request):
 
 
 @api_view(['GET'])
-def deposit_detail(request, deposit_pk):
-    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+def deposit_detail(request, deposit_code):
+    deposit = get_object_or_404(Deposit, deposit_code=deposit_code)
     if request.method == 'GET':
         serializer = DepositSerializer(deposit)
         return Response(serializer.data)    
     
 
 @api_view(['GET'])
-def depositOption_list(request, deposit_pk):
-    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+def depositOption_list(request, deposit_code):
+    deposit = get_object_or_404(Deposit, deposit_code=deposit_code)
     deposit_options = DepositOption.objects.filter(deposit=deposit)
 
     if request.method == 'GET':
@@ -121,8 +121,8 @@ def depositOption_list(request, deposit_pk):
 
 
 @api_view(['GET'])
-def depositOption_detail(request, deposit_pk, depositOption_pk):
-    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+def depositOption_detail(request, deposit_code, depositOption_pk):
+    deposit = get_object_or_404(Deposit, deposit_code=deposit_code)
     deposit_option = get_object_or_404(DepositOption, pk=depositOption_pk, deposit=deposit)
 
     if request.method == 'GET':
@@ -138,16 +138,16 @@ def saving_list(request):
 
 
 @api_view(['GET'])
-def saving_detail(request, saving_pk):
-    saving = get_object_or_404(Saving, pk=saving_pk)
+def saving_detail(request, saving_code):
+    saving = get_object_or_404(Saving, saving_code=saving_code)
     if request.method == 'GET':
         serializer = SavingSerializer(saving)
         return Response(serializer.data)
 
     
 @api_view(['GET'])
-def savingOption_list(request, saving_pk):
-    saving = get_object_or_404(Saving, pk=saving_pk)
+def savingOption_list(request, saving_code):
+    saving = get_object_or_404(Saving, saving_code=saving_code)
     saving_options = SavingOption.objects.filter(saving=saving)
 
     if request.method == 'GET':
@@ -156,7 +156,7 @@ def savingOption_list(request, saving_pk):
 
 
 @api_view(['GET'])
-def savingOption_detail(request, saving_pk, savingOption_pk):
+def savingOption_detail(request, saving_code, savingOption_pk):
     savingOption = get_object_or_404(SavingOption, pk=savingOption_pk)
     if request.method == 'GET':
         serializer = SavingOptionSerializer(savingOption)
@@ -198,8 +198,8 @@ def get_reverse_savings(request, save_trm):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def contract_deposit(request, deposit_pk):
-    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+def contract_deposit(request, deposit_code):
+    deposit = get_object_or_404(Deposit, deposit_code=deposit_code)
     if request.user in deposit.contract_user.all():
         deposit.contract_user.remove(request.user)
     else:
@@ -211,8 +211,8 @@ def contract_deposit(request, deposit_pk):
 
 @api_view(['GET','POST','DELETE'])
 @permission_classes([IsAuthenticated])
-def contract_deposit(request, deposit_pk):
-    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+def contract_deposit(request, deposit_code):
+    deposit = get_object_or_404(Deposit, deposit_code=deposit_code)
     if request.method == 'GET':
         serializer = ContractDepositSerializer(deposit)
         return Response(serializer.data)
@@ -238,8 +238,8 @@ def contract_deposit(request, deposit_pk):
 
 @api_view(['GET','POST','DELETE'])
 @permission_classes([IsAuthenticated])
-def contract_saving(request, saving_pk):
-    saving = get_object_or_404(Saving, pk=saving_pk)
+def contract_saving(request, saving_code):
+    saving = get_object_or_404(Saving, saving_code=saving_code)
     if request.method == 'GET':
         serializer = ContractSavingSerializer(saving)
         return Response(serializer.data)
