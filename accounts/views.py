@@ -16,7 +16,7 @@ def user_profile(request, username):
         return Response(serializer.data)
     
 
-@api_view(['GET', 'POST'])
+@api_view(['GET', 'PUT'])
 @permission_classes([IsAuthenticated])
 def user_info(request, username):
     if request.user.username == username:
@@ -25,10 +25,22 @@ def user_info(request, username):
             serializer = UserInfoSerializer(user)
             return Response(serializer.data)
             
-        elif request.method == 'POST':
-            serializer = UserInfoSerializer(data=request.data)
+        elif request.method == 'PUT':
+            user = get_object_or_404(get_user_model(), username=username)
+            serializer = UserInfoSerializer(instance=user, data=request.data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=request.user)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+
+        # if request.user.is_authenticated:
+        #     serializer = PostSerializer(instance=post, data=request.data, partial=True)
+
+        #     if serializer.is_valid(raise_exception=True):
+        #         serializer.save()
+        #         return Response(serializer.data, status=status.HTTP_200_OK)
+        # else:
+        #     return Response({ "detail": "Authentication credentials were not provided." }, status=status.HTTP_401_UNAUTHORIZED)
         
