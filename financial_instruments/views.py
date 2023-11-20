@@ -160,6 +160,7 @@ def savingOption_detail(request, saving_pk, savingOption_pk):
         serializer = SavingOptionSerializer(savingOption)
         return Response(serializer.data)
     
+
 # 6개월~36개월
 @api_view(['GET'])
 def get_deposits(request, save_trm):
@@ -168,6 +169,7 @@ def get_deposits(request, save_trm):
     serializer = DepositSerializer(deposits, many=True)
     return Response(serializer.data)
 
+
 @api_view(['GET'])
 def get_savings(request, save_trm):
     savings = Saving.objects.filter(savingoption__save_trm=save_trm).order_by('savingoption__intr_rate')
@@ -175,4 +177,19 @@ def get_savings(request, save_trm):
     serializer = SavingSerializer(savings, many=True)
     return Response(serializer.data)
 
+
+@api_view(['GET'])
+def get_reverse_deposits(request, save_trm):
+    deposits = Deposit.objects.filter(depositoption__save_trm=save_trm).order_by('-depositoption__intr_rate')
+
+    serializer = DepositSerializer(deposits, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_reverse_savings(request, save_trm):
+    savings = Saving.objects.filter(savingoption__save_trm=save_trm).order_by('-savingoption__intr_rate')
+
+    serializer = SavingSerializer(savings, many=True)
+    return Response(serializer.data)
 

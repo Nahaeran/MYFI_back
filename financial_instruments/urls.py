@@ -19,5 +19,13 @@ urlpatterns = [
     path('saving/12months/', views.get_savings, {'save_trm': '12'}),
     path('saving/24months/', views.get_savings, {'save_trm': '24'}),
     path('saving/36months/', views.get_savings, {'save_trm': '36'}),
+    path('deposit/-6months/', views.get_reverse_deposits, {'save_trm': '6'}),
+    path('deposit/-12months/', views.get_reverse_deposits, {'save_trm': '12'}),
+    path('deposit/-24months/', views.get_reverse_deposits, {'save_trm': '24'}),
+    path('deposit/-36months/', views.get_reverse_deposits, {'save_trm': '36'}),
+    path('saving/-6months/', views.get_reverse_savings, {'save_trm': '6'}),
+    path('saving/-12months/', views.get_reverse_savings, {'save_trm': '12'}),
+    path('saving/-24months/', views.get_reverse_savings, {'save_trm': '24'}),
+    path('saving/-36months/', views.get_reverse_savings, {'save_trm': '36'}),
 ]
     
