@@ -27,5 +27,7 @@ urlpatterns = [
     path('saving/-12months/', views.get_reverse_savings, {'save_trm': '12'}),
     path('saving/-24months/', views.get_reverse_savings, {'save_trm': '24'}),
     path('saving/-36months/', views.get_reverse_savings, {'save_trm': '36'}),
+    path('deposit_list/<int:deposit_pk>/contract/', views.contract_deposit, name='contract_deposit'),
+    path('saving_list/<int:saving_pk>/contract/', views.contract_saving, name='contract_saving'),
 ]
     

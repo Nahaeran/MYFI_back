@@ -31,4 +31,18 @@ class SavingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class ContractDepositSerializer(serializers.ModelSerializer):
+    depositoption_set = DepositOptionSerializer(many=True, read_only=True)
+    class Meta:
+        model = Deposit
+        fields = ('deposit_code','name', 'depositoption_set')
+
+
+class ContractSavingSerializer(serializers.ModelSerializer):
+    savingoption_set = SavingOptionSerializer(many=True, read_only=True)
+    class Meta:
+        model = Saving
+        fields = ('saving_code','name','kor_co_nm', 'savingoption_set')
+
+
 

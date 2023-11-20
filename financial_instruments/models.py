@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 
 class Deposit(models.Model):
@@ -14,6 +15,7 @@ class Deposit(models.Model):
     join_member = models.TextField(blank=True, null=True)
     etc_note = models.TextField(blank=True, null=True)
     max_limit = models.IntegerField(blank=True, null=True)
+    contract_user = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='contract_deposit')
 
 
 class Saving(models.Model):
@@ -29,6 +31,7 @@ class Saving(models.Model):
     join_member = models.TextField(blank=True, null=True)
     etc_note = models.TextField(blank=True, null=True)
     max_limit = models.IntegerField(blank=True, null=True)
+    contract_user = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='contract_saving')
 
 
 class DepositOption(models.Model):

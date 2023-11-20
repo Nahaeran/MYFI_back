@@ -1,9 +1,11 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db.models import F
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes 
+from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 import requests
 from .serializers import *
@@ -191,5 +193,71 @@ def get_reverse_savings(request, save_trm):
     savings = Saving.objects.filter(savingoption__save_trm=save_trm).order_by('-savingoption__intr_rate')
 
     serializer = SavingSerializer(savings, many=True)
+    return Response()
+
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def contract_deposit(request, deposit_pk):
+    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+    if request.user in deposit.contract_user.all():
+        deposit.contract_user.remove(request.user)
+    else:
+        Deposit.deposit_set.financial_products.add(deposit.name)
+        deposit.contract_user.add(request.user)
+    serializer = ContractDepositSerializer(deposit)
     return Response(serializer.data)
 
+
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def contract_deposit(request, deposit_pk):
+    deposit = get_object_or_404(Deposit, pk=deposit_pk)
+    if request.method == 'GET':
+        serializer = ContractDepositSerializer(deposit)
+        return Response(serializer.data)
+
+    elif request.method == 'DELETE':
+        if request.user in deposit.contract_user.all():
+            deposit.contract_user.remove(request.user)
+            return Response({ "detail": "삭제되었습니다." }, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({ "detail": "삭제할 항목이 없습니다." }, status=status.HTTP_404_NOT_FOUND)
+        
+    elif request.method == 'POST':
+        if request.user not in deposit.contract_user.all():
+            deposit.contract_user.add(request.user)
+            serializer = ContractDepositSerializer(deposit, data=request.data, partial=True)
+
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response({ "detail": "상품이 추가되었습니다." }, status=status.HTTP_200_OK)
+        else:
+            return Response({ "detail": "이미 상품이 존재합니다." }, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET','POST','DELETE'])
+@permission_classes([IsAuthenticated])
+def contract_saving(request, saving_pk):
+    saving = get_object_or_404(Saving, pk=saving_pk)
+    if request.method == 'GET':
+        serializer = ContractSavingSerializer(saving)
+        return Response(serializer.data)
+    
+    elif request.method == 'DELETE':
+        if request.user in saving.contract_user.all():
+            saving.contract_user.remove(request.user)
+            return Response({ "detail": "삭제되었습니다." }, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({ "detail": "삭제할 항목이 없습니다." }, status=status.HTTP_404_NOT_FOUND)
+        
+    elif request.method == 'POST':
+        if request.user not in saving.contract_user.all():
+            saving.contract_user.add(request.user)
+            serializer = ContractSavingSerializer(saving, data=request.data, partial=True)
+
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                return Response({ "detail": "상품이 추가되었습니다." }, status=status.HTTP_200_OK)
+        else:
+            return Response({ "detail": "이미 상품이 존재합니다." }, status=status.HTTP_400_BAD_REQUEST)

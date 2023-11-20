@@ -2,6 +2,7 @@ from rest_framework import serializers
 from allauth.account.adapter import get_adapter
 from .models import User
 from dj_rest_auth.registration.serializers import RegisterSerializer
+from financial_instruments.serializers import ContractDepositSerializer, ContractSavingSerializer
 
 
 
@@ -43,10 +44,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
 class UserInfoSerializer(serializers.ModelSerializer):
         profile_img = serializers.ImageField(use_url=True)
+        contract_deposit = ContractDepositSerializer(many=True)
+        contract_saving = ContractSavingSerializer(many=True)
         class Meta:
             model = User
-            fields = ('profile_img', 'id', 'username', 'name', 'email', 'age', 'money', 'salary', 'financial_products')
+            fields = '__all__'
             read_only_fields = ('id','username', 'name',)
+            
             
 
 
