@@ -27,8 +27,6 @@ def user_info(request, username):
             
         elif request.method == 'PUT':
             user = get_object_or_404(get_user_model(), username=username)
-            print(request.data)
-            print(request.FILES)
             serializer = UserInfoSerializer(instance=user, data=request.data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=request.user)
@@ -39,7 +37,7 @@ def user_info(request, username):
 
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
-def user_profile(request, username):
+def user_info_profile(request, username):
     if request.user.username == username:
         if request.method == 'PUT':
             user = get_object_or_404(get_user_model(), username=username)
