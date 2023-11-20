@@ -27,20 +27,26 @@ def user_info(request, username):
             
         elif request.method == 'PUT':
             user = get_object_or_404(get_user_model(), username=username)
+            print(request.data)
+            print(request.FILES)
             serializer = UserInfoSerializer(instance=user, data=request.data, partial=True)
             if serializer.is_valid(raise_exception=True):
                 serializer.save(user=request.user)
                 return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
 
-        # if request.user.is_authenticated:
-        #     serializer = PostSerializer(instance=post, data=request.data, partial=True)
 
-        #     if serializer.is_valid(raise_exception=True):
-        #         serializer.save()
-        #         return Response(serializer.data, status=status.HTTP_200_OK)
-        # else:
-        #     return Response({ "detail": "Authentication credentials were not provided." }, status=status.HTTP_401_UNAUTHORIZED)
-        
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def user_profile(request, username):
+    if request.user.username == username:
+        if request.method == 'PUT':
+            user = get_object_or_404(get_user_model(), username=username)
+            data = { 'profile_img': request.data['profile_img[]']}
+            serializer = UserInfoSerializer(instance=user, data=data, partial=True)
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(user=request.user)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
