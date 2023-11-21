@@ -12,6 +12,8 @@ class User(AbstractUser):
     age = models.IntegerField(blank=True, null=True)
     money = models.IntegerField(blank=True, null=True)
     salary = models.IntegerField(blank=True, null=True)
+    desire_amount_saving = models.IntegerField(blank=True, null=True)
+    desire_amount_deposit = models.IntegerField(blank=True, null=True)
     is_superuser = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
@@ -35,6 +37,8 @@ class CustomAccountAdapter(DefaultAccountAdapter):
         age = data.get("age")
         money = data.get("money")
         salary = data.get("salary")
+        desire_amount_saving = data.get("desire_amount_saving")
+        desire_amount_deposit = data.get("desire_amount_deposit")
         
 
         user_email(user, email)
@@ -53,6 +57,10 @@ class CustomAccountAdapter(DefaultAccountAdapter):
             user.money = money
         if salary:
             user.salary = salary
+        if desire_amount_deposit:
+            user.desire_amount_deposit = desire_amount_deposit
+        if desire_amount_saving:
+            user.desire_amount_saving = desire_amount_saving
         if financial_product:
             financial_products = user.financial_products.split(',')
             financial_products.append(financial_product)
