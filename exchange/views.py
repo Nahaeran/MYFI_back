@@ -14,10 +14,8 @@ EXCHANGE_API_URL = f'https://www.koreaexim.go.kr/site/program/financial/exchange
 def index (request):
     response = requests.get(EXCHANGE_API_URL).json()
     exist_response = Exchange.objects.all()
-    print(exist_response)
    
     if response: # 가 있다면기존 데이터를 업데이트
-        # print(response)
         if not exist_response: # 쿼리셋이 비어있다면
                 serializer = ExchangeSerializer(data=response, many=True)
                 # print(serializer.data)
