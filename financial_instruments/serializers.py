@@ -21,6 +21,7 @@ class DepositSerializer(serializers.ModelSerializer):
     class Meta:
         model = Deposit
         fields = '__all__'
+        read_only_fields = ('contract_user',)
 
 
 class SavingSerializer(serializers.ModelSerializer):
@@ -29,6 +30,7 @@ class SavingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Saving
         fields = '__all__'
+        read_only_fields = ('contract_user',)
 
 
 class ContractDepositSerializer(serializers.ModelSerializer):
