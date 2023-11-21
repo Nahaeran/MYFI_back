@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes 
@@ -277,3 +278,12 @@ def get_bank_saving(request, kor_co_nm):
         return Response(serializer.data)
     else:
         return Response({ "detail": "해당은행의 상품이 없습니다.." }, status=status.HTTP_204_NO_CONTENT)
+    
+
+@api_view(['GET'])
+def recommend_list(request):
+    '''
+    유저의 필요정보
+    희망예치기간
+    '''
+    pass

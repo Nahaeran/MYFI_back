@@ -31,5 +31,6 @@ urlpatterns = [
     path('saving_list/<str:saving_code>/contract/', views.contract_saving, name='contract_saving'),
     path('get_bank_deposit/<str:kor_co_nm>/', views.get_bank_deposit),
     path('get_bank_saving/<str:kor_co_nm>/', views.get_bank_saving),
+    path('recommend_list', views.recommend_list)
 ]
     
