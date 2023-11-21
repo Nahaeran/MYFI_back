@@ -37,7 +37,7 @@ class ContractDepositSerializer(serializers.ModelSerializer):
     depositoption_set = DepositOptionSerializer(many=True, read_only=True)
     class Meta:
         model = Deposit
-        fields = ('deposit_code','name', 'depositoption_set')
+        fields = ('deposit_code','name', 'kor_co_nm', 'depositoption_set')
 
 
 class ContractSavingSerializer(serializers.ModelSerializer):
