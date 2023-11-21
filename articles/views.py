@@ -5,6 +5,7 @@ from rest_framework import status
 # permission Decorators
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 
 from django.shortcuts import get_object_or_404, get_list_or_404
 from django.contrib.auth import get_user_model
@@ -12,14 +13,18 @@ from .serializers import PostListSerializer, PostSerializer, CommentSerializer
 from .models import Post, Comment
 
 
-# 전체 게시글 조회 및 게시글 생성
 @api_view(['GET', 'POST'])
 # @permission_classes([IsAuthenticated])
 def post_list(request):
     if request.method == 'GET':
-        posts = Post.objects.all()
-        serializer = PostListSerializer(posts, many=True)
-        return Response(serializer.data)
+        # 페이지 네이션 설정
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # 페이지당 표시할 게시글 수를 조정
+        
+        posts = Post.objects.all().order_by('-created_at')  # created_at 역순으로 정렬(최신)
+        result_page = paginator.paginate_queryset(posts, request)
+        serializer = PostListSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     elif request.method == 'POST':
         if request.user.is_authenticated:
@@ -30,6 +35,7 @@ def post_list(request):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({ "detail": "Authentication credentials were not provided." }, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 #단일 게시글 조회,삭제 및 수정 및 조회
