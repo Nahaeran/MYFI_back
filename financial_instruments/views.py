@@ -281,40 +281,6 @@ def get_bank_saving(request, kor_co_nm):
         return Response({ "detail": "해당은행의 상품이 없습니다.." }, status=status.HTTP_204_NO_CONTENT)
     
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def deposit_recommend_list(request):
-    '''
-    유저의 필요정보
-    희망저축금액  desire_amount_deposit 월 200만원 
-    희망예치기간  deposit_period 24개월
-    가져오고
-   
-    상품전체를 하나씩 가져오기
-    상품을 옵션별(기간별)로 나누기
-
-    최고한도 max_limit
-    deposit_set.save_trm 6개월 /12개월 /24개월 /36개월 등 //멀지않게 조정
-    같으면 0 같지않으면 차이만큼 -
-
-
-    기간별 저축금리 = intr_rate
-
-    행렬에 필요정보를 토대로 유저정보를 저장
-    상품전체를 행렬에 찍기
-    가까운순서대로 10개 뽑아내기
-    금리가 높은 순으로 소트하기
-
-    문제점
-    적금 희망이 200일때 100짜리 2개를 해도 되고 좀 적게해도되고 좀많이해도된다?
-    비교정보 부족?
-    가지치기 생각..!
-    '''
-    
-    # print(request.u)
-    # return Response()
-    pass
-
 @api_view(['GET']) #예금
 @permission_classes([IsAuthenticated])
 def deposit_recommend_list(request):
