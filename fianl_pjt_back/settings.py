@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-API_KEY = os.environ.get('API_KEY')
+BANK_API_KEY = os.environ.get('BANK_API_KEY')
 EXCHANGE_API_KEY = os.environ.get('EXCHANGE_API_KEY')
 
 # Quick-start development settings - unsuitable for production

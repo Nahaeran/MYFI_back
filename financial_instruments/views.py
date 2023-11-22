@@ -11,8 +11,8 @@ from .serializers import *
 from .models import *
 
 
-# DEPOSIT_API_URL = f'http://finlife.fss.or.kr/finlifeapi/depositProductsSearch.json?auth={settings.API_KEY}&topFinGrpNo=020000&pageNo=1'
-# SAVING_API_URL = f'http://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json?auth={settings.API_KEY}&topFinGrpNo=020000&pageNo=1'
+# DEPOSIT_API_URL = f'http://finlife.fss.or.kr/finlifeapi/depositProductsSearch.json?auth={settings.BANK_API_KEY}&topFinGrpNo=020000&pageNo=1'
+# SAVING_API_URL = f'http://finlife.fss.or.kr/finlifeapi/savingProductsSearch.json?auth={settings.BANK_API_KEY}&topFinGrpNo=020000&pageNo=1'
 
 # deposit_res = requests.get(DEPOSIT_API_URL).json()
 # deposit_baseList = deposit_res.get('result').get('baseList')
@@ -202,7 +202,6 @@ def contract_deposit(request, deposit_code):
     if request.user in deposit.contract_user.all():
         deposit.contract_user.remove(request.user)
     else:
-        Deposit.deposit_set.financial_products.add(deposit.name)
         deposit.contract_user.add(request.user)
     serializer = ContractDepositSerializer(deposit)
     return Response(serializer.data)
