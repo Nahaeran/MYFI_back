@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes 
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from accounts.models import User
 import requests
 from .serializers import *
 from .models import *
@@ -311,8 +312,76 @@ def deposit_recommend_list(request):
     '''
     
     # print(request.u)
-    print(request.user.desire_amount_deposit)
-    print(request.user.desire_amount_saving)
-
     # return Response()
     pass
+
+@api_view(['GET']) #예금
+@permission_classes([IsAuthenticated])
+def deposit_recommend_list(request):
+    user = get_object_or_404(User, username=request.user.username)
+    desired_amount = user.desire_amount_deposit #유저의 희망금액
+    desired_period = user.deposit_period    #유저의 희망 기간
+   
+    if not desired_period or not desired_amount:
+        if not desired_period:
+            return Response({"message": "유저의 희망예금이 없습니다."})
+        elif not desired_amount:
+            return Response({"message": "유저의 희망예금금액이 없습니다."})
+
+    desired_period = int(desired_period)
+    desired_amount = int(desired_amount)
+
+    deposit_options = DepositOption.objects.filter(
+        save_trm__in=[6, 12, 24, 36]
+    )
+    deposit_options = deposit_options.order_by("save_trm")
+    deposit_options = deposit_options.order_by("deposit__max_limit")
+
+    deposit_options = deposit_options.filter(
+        save_trm__lte=desired_period + desired_period//2, #상품의 기간이 유저의 희망기간보다 낮은것들
+        deposit__max_limit__gte=desired_amount - desired_amount//2,  # 상품의 적금한도가 유저의 희망보다 높은것들
+    )
+
+    deposit_options = deposit_options.order_by("-intr_rate") #-가 높은순으로 나옴
+    deposit_options = deposit_options[:10]
+
+
+    serializers = DepositOptionSerializer2(deposit_options, many=True)
+
+    return Response(serializers.data)
+
+
+@api_view(['GET']) #적금
+@permission_classes([IsAuthenticated])
+def saving_recommend_list(request):
+    user = get_object_or_404(User, username=request.user.username)
+    desired_amount = user.desire_amount_saving #유저의 희망금액
+    desired_period = user.saving_period    #유저의 희망 기간
+   
+    if not desired_period or not desired_amount:
+        if not desired_period:
+            return Response({"message": "유저의 희망기간이 없습니다."})
+        elif not desired_amount:
+            return Response({"message": "유저의 희망적금금액이 없습니다."})
+
+    desired_period = int(desired_period)
+    desired_amount = int(desired_amount)
+
+    saving_options = SavingOption.objects.filter(
+        save_trm__in=[6, 12, 24, 36]
+    )
+    saving_options = saving_options.order_by("save_trm")
+    saving_options = saving_options.order_by("saving__max_limit")
+
+    deposit_options = deposit_options.filter(
+        save_trm__lte=desired_period + desired_period//2, #상품의 기간이 유저의 희망기간보다 낮은것들
+        saving__max_limit__gte=desired_amount - desired_amount//2,  # 상품의 적금한도가 유저의 희망보다 높은것들
+    )
+
+    saving_options = saving_options.order_by("-intr_rate") #-가 높은순으로 나옴
+    saving_options = saving_options[:10]
+
+
+    serializers = SavingOptionSerializer2(saving_options, many=True)
+
+    return Response(serializers.data)

@@ -32,5 +32,6 @@ urlpatterns = [
     path('get_bank_deposit/<str:kor_co_nm>/', views.get_bank_deposit),
     path('get_bank_saving/<str:kor_co_nm>/', views.get_bank_saving),
     path('deposit_recommend_list/', views.deposit_recommend_list),
+    path('saving_recommend_list/', views.saving_recommend_list),
 ]
     
