@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes 
 from rest_framework.permissions import IsAuthenticated
@@ -9,6 +10,7 @@ from accounts.models import User
 import requests
 from .serializers import *
 from .models import *
+from accounts.serializers import *
 
 
 # DEPOSIT_API_URL = f'http://finlife.fss.or.kr/finlifeapi/depositProductsSearch.json?auth={settings.BANK_API_KEY}&topFinGrpNo=020000&pageNo=1'
@@ -350,3 +352,46 @@ def saving_recommend_list(request):
     serializers = SavingOptionSerializer2(saving_options, many=True)
 
     return Response(serializers.data)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def recommend_product(request): 
+    age = request.user.age
+    money = request.user.money
+    salary = request.user.salary
+    standard_deviation_age = 3
+    standard_deviation_money = 5000000
+    standard_deviation_salary = 10000000
+
+    similar_users = User.objects.filter(
+        ~Q(username=request.user.username),
+        age__range=(age - standard_deviation_age, age + standard_deviation_age),
+        money__range=(money - standard_deviation_money, money + standard_deviation_money),
+        salary__range=(salary - standard_deviation_salary, salary + standard_deviation_salary)
+    )
+
+    if not similar_users.exists():
+        similar_users = User.objects.all()
+
+    result_data = []
+
+    for similar_user in similar_users:
+        serializer = UserInfoSerializer(similar_user)
+        result_data.append(serializer.data)
+
+    # 모든 유사한 사용자에 대한 정보를 수집한 후에 처리
+    # result_data에 있는 사용자 정보를 이용하여 처리
+
+    # intr_rate 값이 있는 데이터만 필터링
+    valid_data = [user_data for user_data in result_data if user_data.get('contract_saving') and user_data['contract_saving'][0].get('savingoption_set') and user_data['contract_saving'][0]['savingoption_set'][0].get('intr_rate') is not None]
+    
+    # intr_rate 값이 있는 경우에만 정렬
+    if valid_data:
+        top_10_products = sorted(valid_data, key=lambda x: x['contract_saving'][0]['savingoption_set'][0]['intr_rate'], reverse=True)[:10]
+        return Response(top_10_products)
+    else:
+        return Response([])
+
+
+
