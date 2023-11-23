@@ -7,4 +7,5 @@ urlpatterns = [
     path('<str:username>/', views.user_profile),
     path('<str:username>/info/', views.user_info),
     path('<str:username>/profile/', views.user_info_profile),
+    path('make_users_data/', views.make_users_data)
 ] 

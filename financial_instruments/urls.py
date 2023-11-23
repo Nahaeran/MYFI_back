@@ -33,5 +33,6 @@ urlpatterns = [
     path('get_bank_saving/<str:kor_co_nm>/', views.get_bank_saving),
     path('recommend_product_one/', views.recommend_product_one),
     path('recommend_product_two/', views.recommend_product_two),
+    path('make_financial_data/', views.make_financial_data)
 ]
     
