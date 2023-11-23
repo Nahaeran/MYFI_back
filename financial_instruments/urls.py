@@ -31,8 +31,7 @@ urlpatterns = [
     path('saving_list/<str:saving_code>/contract/', views.contract_saving, name='contract_saving'),
     path('get_bank_deposit/<str:kor_co_nm>/', views.get_bank_deposit),
     path('get_bank_saving/<str:kor_co_nm>/', views.get_bank_saving),
-    path('deposit_recommend_list/', views.deposit_recommend_list),
-    path('saving_recommend_list/', views.saving_recommend_list),
-    path('recommend_product/', views.recommend_product),
+    path('recommend_product_one/', views.recommend_product_one),
+    path('recommend_product_two/', views.recommend_product_two),
 ]
     
