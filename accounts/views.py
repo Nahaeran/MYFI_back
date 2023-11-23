@@ -53,37 +53,37 @@ def user_info_profile(request, username):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
 
+# # print('user_data.json')
 
-def make_users_data(request):
-    with open('accounts/fixtures/accounts/user_data.json', 'r', encoding='UTF8') as f:
-        data = json.loads(f.read())
+# with open('accounts/fixtures/accounts/user_data.json', 'r', encoding='UTF8') as f:
+#     data = json.loads(f.read())
+# # print(data)
+# UserModel = get_user_model()
+
+# for user in data:
+#     user = user['fields']
+#     usertemp = UserModel.objects.create(
+#         username=user['username'],
+#         name=user['name'],
+#         age=user['age'],
+#         money=user['money'],
+#         salary=user['salary'],
+#         password=user['password'],
+#         desire_amount_saving=user['desire_amount_saving'],
+#         desire_amount_deposit=user['desire_amount_deposit'],
+#         deposit_period=user['deposit_period'],
+#         saving_period=user['saving_period'],
+#         is_active=user['is_active'],
+#         is_staff=user['is_staff'],
+#         is_superuser=user['is_superuser'],
+#     )
+
+#     usertemp.save()
+
+#     for deposit_pk in user['contract_deposit']:
+#         deposit = Deposit.objects.get(pk=deposit_pk)
+#         deposit.contract_user.add(usertemp)
     
-    UserModel = get_user_model()
-
-    for user in data:
-        user = user['fields']
-        usertemp = UserModel.objects.create(
-            username=user['username'],
-            name=user['name'],
-            age=user['age'],
-            money=user['money'],
-            salary=user['salary'],
-            password=user['password'],
-            desire_amount_saving=user['desire_amount_saving'],
-            desire_amount_deposit=user['desire_amount_deposit'],
-            deposit_period=user['deposit_period'],
-            saving_period=user['saving_period'],
-            is_active=user['is_active'],
-            is_staff=user['is_staff'],
-            is_superuser=user['is_superuser'],
-        )
-
-        usertemp.save()
-
-        for deposit_pk in user['contract_deposit']:
-            deposit = Deposit.objects.get(pk=deposit_pk)
-            deposit.contract_user.add(usertemp)
-        
-        for saving_pk in user['contract_saving']:
-            saving = Saving.objects.get(pk=saving_pk)
-            saving.contract_user.add(usertemp)
+#     for saving_pk in user['contract_saving']:
+#         saving = Saving.objects.get(pk=saving_pk)
+#         saving.contract_user.add(usertemp)

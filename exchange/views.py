@@ -18,7 +18,6 @@ def index (request):
     if response: # 가 있다면기존 데이터를 업데이트
         if not exist_response: # 쿼리셋이 비어있다면
                 serializer = ExchangeSerializer(data=response, many=True)
-                # print(serializer.data)
                 if serializer.is_valid(raise_exception=True):
                     serializer.save()
                     return Response(serializer.data)

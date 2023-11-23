@@ -1,6 +1,7 @@
 from collections import Counter
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
 from django.conf import settings
 from django.db.models import Q
 from rest_framework.response import Response
@@ -96,6 +97,7 @@ def make_financial_data(request):
         serializer = SavingOptionSerializer(data=save_option)
         if serializer.is_valid(raise_exception=True):
             serializer.save(saving=product)
+    return HttpResponse("금융 데이터 생성 완료")
 
 @api_view(['GET']) # id 순
 def deposit_list(request):
@@ -295,43 +297,60 @@ def recommend_product_one(request):
         elif not desired_amount:
             return Response({"message": "유저의 희망적금금액이 없습니다."})
 
+    # Convert desired_period and desired_amount to integers
     desired_period = int(desired_period)
     desired_amount = int(desired_amount)
 
+    # Filter deposit options
     deposit_options = DepositOption.objects.filter(
         save_trm__in=[6, 12, 24, 36]
     )
     deposit_options = deposit_options.order_by("save_trm")
     deposit_options = deposit_options.order_by("deposit__max_limit")
 
+    # Handle null values for max_limit
     deposit_options = deposit_options.filter(
-        save_trm__lte=desired_period + desired_period // 2,
-        deposit__max_limit__gte=desired_amount - desired_amount // 2,
+        Q(deposit__max_limit__gte=desired_amount - desired_amount // 2) | Q(deposit__max_limit__isnull=True)
     )
 
+    # Filter deposit options by desired period
+    deposit_options = deposit_options.filter(
+        save_trm__lte=desired_period + desired_period // 2
+    )
+
+    # Sort deposit options by interest rate and limit to top 10
     deposit_options = deposit_options.order_by("-intr_rate")
     deposit_options = deposit_options[:10]
 
+    # Filter saving options
     saving_options = SavingOption.objects.filter(
         save_trm__in=[6, 12, 24, 36]
     )
     saving_options = saving_options.order_by("save_trm")
     saving_options = saving_options.order_by("saving__max_limit")
 
+    # Handle null values for max_limit
     saving_options = saving_options.filter(
-        save_trm__lte=desired_period + desired_period // 2,
-        saving__max_limit__gte=desired_amount - desired_amount // 2,
+        Q(saving__max_limit__gte=desired_amount - desired_amount // 2) | Q(saving__max_limit__isnull=True)
     )
 
+    # Filter saving options by desired period
+    saving_options = saving_options.filter(
+        save_trm__lte=desired_period + desired_period // 2
+    )
+
+    # Sort saving options by interest rate and limit to top 10
     saving_options = saving_options.order_by("-intr_rate")
     saving_options = saving_options[:10]
 
-    depositserializers = DepositOptionSerializer2(deposit_options, many=True).data,
-    savingserializers = SavingOptionSerializer2(saving_options, many=True).data,
+    # Serialize deposit and saving options
+    depositserializers = DepositOptionSerializer2(deposit_options, many=True)
+    savingserializers = SavingOptionSerializer2(saving_options, many=True)
 
+    # Create response data
     product_list = {
-        "deposit": depositserializers,
-        "saving": savingserializers,
+        "deposit": depositserializers.data,
+        "saving": savingserializers.data,
     }
 
     return Response(product_list)
@@ -343,9 +362,9 @@ def recommend_product_two(request):
     age = request.user.age
     money = request.user.money
     salary = request.user.salary
-    standard_deviation_age = 3
-    standard_deviation_money = 5000000
-    standard_deviation_salary = 50000000
+    standard_deviation_age = 6
+    standard_deviation_money = 0000000
+    standard_deviation_salary = 10000000
     is_not_similar_users = False
 
     similar_users = User.objects.filter(
@@ -364,6 +383,8 @@ def recommend_product_two(request):
     for similar_user in similar_users:
         serializer = UserInfoSerializer(similar_user)
         id_data.append(serializer.data["id"])
+
+    print(len(id_data))
 
     deposit_list = []
     saving_list = []

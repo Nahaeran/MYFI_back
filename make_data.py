@@ -28,9 +28,9 @@ import requests
 # from financial_instruments.models import Deposit, Saving
 # from financial_instruments.serializers import DepositSerializer, SavingSerializer
 
-first_name_samples = "송김이박최정강조윤장임나"
-middle_name_samples = "찬민서예지도하주윤채현지해"
-last_name_samples = "의준윤우원호후서연아은진란"
+first_name_samples = "송나김이박최정강조윤장임공손전한오서신권황안홍"
+middle_name_samples = "찬해지수근민서예지도하주윤채현지혜동희의"
+last_name_samples = "의란민혜용준윤우원호후서연아은진"
 
 # Deposits = Deposit.objects.all()
 # Savings = Saving.objects.all()
@@ -81,7 +81,7 @@ from collections import OrderedDict
 file = OrderedDict()
 
 name_list = []
-N = 1000
+N = 5000
 i = 0
 
 while i < N:
@@ -106,10 +106,14 @@ with open(save_dir, 'w', encoding="utf-8") as f:
             'username': 'test'+str(i), # 유저아이디 test1,2,3,4,5,6,7
             'name': name_list[i],  # 유저 이름 랜덤 생성
             # 랜덤한 0~5개의 상품을 가입하도록 삽입됨
+
+            # 'contract_deposit': [ DepositSerializer(random.choice(Deposits)).data for _ in range(random.randint(1, 2))], # 금융 상품 리스트
+            # 'contract_saving': [ SavingSerializer(random.choice(Savings)).data for _ in range(random.randint(1, 3))], # 금융 상품 리스트
             
             'contract_deposit': list(set([ random.randrange(1,38) for _ in range(2) ])) , # 금융 상품 리스트
             'contract_saving': list(set([ random.randrange(1,62) for _ in range(random.randint(2, 3)) ])), # 금융 상품 리스트
-
+            # 'contract_deposit': '[' + ','.join([str(random.randrange(1,38)) for _ in range(random.randint(1, 2))]) + ']', # 금융 상품 리스트
+            # 'contract_saving': '[' +','.join([str(random.randrange(1,62)) for _ in range(random.randint(1, 3))]) + ']', # 금융 상품 리스트
             'age': random.randint(20, 70),  # 나이
             'money': random.randrange(1000000, 100000000, 1000000),    # 현재 가진 금액
             'salary': random.randrange(1000000, 150000000, 12000000), # 연봉
