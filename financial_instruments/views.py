@@ -329,9 +329,9 @@ def recommend_product_one(request):
     deposit = deposit.filter(
         depositoption__save_trm__lte=desired_period_deposit + desired_period_deposit // 2
     )
-
-    deposit = deposit.order_by("-depositoption__intr_rate")
-    deposit = deposit[:10]
+    
+    deposit = list(set(deposit.order_by("-depositoption__intr_rate")[:10]))
+    # deposit = deposit[:10]
 
     ####### saving
 
@@ -371,8 +371,8 @@ def recommend_product_one(request):
         savingoption__save_trm__lte=desired_period_saving + desired_period_saving // 2
     )
 
-    saving = saving.order_by("-savingoption__intr_rate")
-    saving = saving[:10]
+    saving = list(set(saving.order_by("-savingoption__intr_rate")[:10]))
+    # saving = saving[:10]
 
     depositserializers = DepositSerializer(deposit, many=True)
     savingserializers = SavingSerializer(saving, many=True)
