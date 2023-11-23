@@ -288,64 +288,94 @@ def get_bank_saving(request, kor_co_nm):
 @permission_classes([IsAuthenticated])
 def recommend_product_one(request):
     user = get_object_or_404(User, username=request.user.username)
-    desired_amount = user.desire_amount_deposit
-    desired_period = user.deposit_period
+    desired_amount_deposit = user.desire_amount_deposit
+    desired_period_deposit = user.deposit_period
 
-    if not desired_period or not desired_amount:
-        if not desired_period:
+    if not desired_period_deposit or not desired_amount_deposit:
+        if not desired_period_deposit:
             return Response({"message": "유저의 희망기간이 없습니다."})
-        elif not desired_amount:
+        elif not desired_amount_deposit:
             return Response({"message": "유저의 희망적금금액이 없습니다."})
 
-    # Convert desired_period and desired_amount to integers
-    desired_period = int(desired_period)
-    desired_amount = int(desired_amount)
+    # Convert desired_period_deposit and desired_amount_deposit to integers
+    desired_period_deposit = int(desired_period_deposit)
+    desired_amount_deposit = int(desired_amount_deposit)
 
     # Filter deposit options
-    deposit_options = DepositOption.objects.filter(
-        save_trm__in=[6, 12, 24, 36]
-    )
-    deposit_options = deposit_options.order_by("save_trm")
-    deposit_options = deposit_options.order_by("deposit__max_limit")
+    # deposit_options = DepositOption.objects.filter(
+    #     save_trm__in=[6, 12, 24, 36]
+    # )
+    # deposit_options = deposit_options.order_by("save_trm")
+    # deposit_options = deposit_options.order_by("deposit__max_limit")
 
-    # Handle null values for max_limit
-    deposit_options = deposit_options.filter(
-        Q(deposit__max_limit__gte=desired_amount - desired_amount // 2) | Q(deposit__max_limit__isnull=True)
+    # # Handle null values for max_limit
+    # deposit_options = deposit_options.filter(
+    #     Q(deposit__max_limit__gte=desired_amount_deposit - desired_amount_deposit // 2) | Q(deposit__max_limit__isnull=True)
+    # )
+
+    # # Filter deposit options by desired period
+    # deposit_options = deposit_options.filter(
+    #     save_trm__lte=desired_period_deposit + desired_period_deposit // 2
+    # )
+
+    # # Sort deposit options by interest rate and limit to top 10
+    # deposit_options = deposit_options.order_by("-intr_rate")
+    # deposit_options = deposit_options[:10]
+
+    deposit = Deposit.objects.filter(
+        Q(max_limit__gte=desired_amount_deposit - desired_amount_deposit // 2) | Q(max_limit__isnull=True)
     )
 
-    # Filter deposit options by desired period
-    deposit_options = deposit_options.filter(
-        save_trm__lte=desired_period + desired_period // 2
+    deposit = deposit.filter(
+        depositoption__save_trm__lte=desired_period_deposit + desired_period_deposit // 2
     )
 
-    # Sort deposit options by interest rate and limit to top 10
-    deposit_options = deposit_options.order_by("-intr_rate")
-    deposit_options = deposit_options[:10]
+    deposit = deposit.order_by("-depositoption__intr_rate")
+    deposit = deposit[:10]
+
+    ####### saving
+
+    desired_amount_saving = user.desire_amount_saving
+    desired_period_saving = user.saving_period
 
     # Filter saving options
-    saving_options = SavingOption.objects.filter(
-        save_trm__in=[6, 12, 24, 36]
-    )
-    saving_options = saving_options.order_by("save_trm")
-    saving_options = saving_options.order_by("saving__max_limit")
+    # saving_options = SavingOption.objects.filter(
+    #     save_trm__in=[6, 12, 24, 36]
+    # )
+    # saving_options = saving_options.order_by("save_trm")
+    # saving_options = saving_options.order_by("saving__max_limit")
 
-    # Handle null values for max_limit
-    saving_options = saving_options.filter(
-        Q(saving__max_limit__gte=desired_amount - desired_amount // 2) | Q(saving__max_limit__isnull=True)
-    )
+    # # Handle null values for max_limit
+    # saving_options = saving_options.filter(
+    #     Q(saving__max_limit__gte=desired_amount_saving - desired_amount_saving // 2) | Q(saving__max_limit__isnull=True)
+    # )
 
-    # Filter saving options by desired period
-    saving_options = saving_options.filter(
-        save_trm__lte=desired_period + desired_period // 2
-    )
+    # # Filter saving options by desired period
+    # saving_options = saving_options.filter(
+    #     save_trm__lte=desired_period_saving + desired_period_saving // 2
+    # )
 
-    # Sort saving options by interest rate and limit to top 10
-    saving_options = saving_options.order_by("-intr_rate")
-    saving_options = saving_options[:10]
+    # # Sort saving options by interest rate and limit to top 10
+    # saving_options = saving_options.order_by("-intr_rate")
+    # saving_options = saving_options[:10]
 
     # Serialize deposit and saving options
-    depositserializers = DepositOptionSerializer2(deposit_options, many=True)
-    savingserializers = SavingOptionSerializer2(saving_options, many=True)
+    # depositserializers = DepositOptionSerializer2(deposit_options, many=True)
+    # savingserializers = SavingOptionSerializer2(saving_options, many=True)
+
+    saving = Saving.objects.filter(
+        Q(max_limit__gte=desired_amount_saving - desired_amount_saving // 2) | Q(max_limit__isnull=True)
+    )
+
+    saving = saving.filter(
+        savingoption__save_trm__lte=desired_period_saving + desired_period_saving // 2
+    )
+
+    saving = saving.order_by("-savingoption__intr_rate")
+    saving = saving[:10]
+
+    depositserializers = DepositSerializer(deposit, many=True)
+    savingserializers = SavingSerializer(saving, many=True)
 
     # Create response data
     product_list = {
@@ -384,7 +414,7 @@ def recommend_product_two(request):
         serializer = UserInfoSerializer(similar_user)
         id_data.append(serializer.data["id"])
 
-    print(len(id_data))
+    # print(len(id_data))
 
     deposit_list = []
     saving_list = []
@@ -397,6 +427,7 @@ def recommend_product_two(request):
     # Counter를 사용하여 각 Deposit과 Saving 객체의 등장 횟수를 계산
     deposit_counter = Counter(deposit_list)
     saving_counter = Counter(saving_list)
+
 
     # 각 객체와 그 등장 횟수를 저장할 리스트
     deposit_result = []
