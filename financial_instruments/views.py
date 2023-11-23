@@ -1,3 +1,4 @@
+from collections import Counter
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from django.conf import settings
@@ -362,7 +363,8 @@ def recommend_product(request):
     salary = request.user.salary
     standard_deviation_age = 3
     standard_deviation_money = 5000000
-    standard_deviation_salary = 10000000
+    standard_deviation_salary = 50000000
+    is_not_similar_users = False
 
     similar_users = User.objects.filter(
         ~Q(username=request.user.username),
@@ -372,26 +374,46 @@ def recommend_product(request):
     )
 
     if not similar_users.exists():
+        is_not_similar_users = True
         similar_users = User.objects.all()
 
-    result_data = []
+    id_data = []
 
     for similar_user in similar_users:
         serializer = UserInfoSerializer(similar_user)
-        result_data.append(serializer.data)
+        id_data.append(serializer.data["id"])
 
-    # 모든 유사한 사용자에 대한 정보를 수집한 후에 처리
-    # result_data에 있는 사용자 정보를 이용하여 처리
-
-    # intr_rate 값이 있는 데이터만 필터링
-    valid_data = [user_data for user_data in result_data if user_data.get('contract_saving') and user_data['contract_saving'][0].get('savingoption_set') and user_data['contract_saving'][0]['savingoption_set'][0].get('intr_rate') is not None]
+    deposit_list = []
+    saving_list = []
     
-    # intr_rate 값이 있는 경우에만 정렬
-    if valid_data:
-        top_10_products = sorted(valid_data, key=lambda x: x['contract_saving'][0]['savingoption_set'][0]['intr_rate'], reverse=True)[:10]
-        return Response(top_10_products)
-    else:
-        return Response([])
+    for user_id in id_data:
+        user = User.objects.get(pk=user_id)
+        deposit_list.extend(user.contract_deposit.all())
+        saving_list.extend(user.contract_saving.all())
 
+    # Counter를 사용하여 각 Deposit과 Saving 객체의 등장 횟수를 계산
+    deposit_counter = Counter(deposit_list)
+    saving_counter = Counter(saving_list)
 
+    # 각 객체와 그 등장 횟수를 저장할 리스트
+    deposit_result = []
+    saving_result = []
+
+    for deposit, count in deposit_counter.items():
+        # Deposit 객체의 정보와 등장 횟수를 딕셔너리로 저장
+        deposit_info = {'deposit': DepositSerializer(deposit).data, 'count': count}
+        deposit_result.append(deposit_info)
+
+    for saving, count in saving_counter.items():
+        # Saving 객체의 정보와 등장 횟수를 딕셔너리로 저장
+        saving_info = {'saving': SavingSerializer(saving).data, 'count': count}
+        saving_result.append(saving_info)
+
+    # 등장 횟수를 기준으로 내림차순 정렬
+    deposit_result = sorted(deposit_result, key=lambda x: x['count'], reverse=True)[:10]
+    saving_result = sorted(saving_result, key=lambda x: x['count'], reverse=True)[:10]
+
+    result = {'is_not_similar_users': is_not_similar_users, 'deposit': deposit_result, 'saving': saving_result}
+
+    return Response(result)
 

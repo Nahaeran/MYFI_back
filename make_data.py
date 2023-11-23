@@ -106,17 +106,13 @@ with open(save_dir, 'w', encoding="utf-8") as f:
             'username': 'test'+str(i), # 유저아이디 test1,2,3,4,5,6,7
             'name': name_list[i],  # 유저 이름 랜덤 생성
             # 랜덤한 0~5개의 상품을 가입하도록 삽입됨
-
-            # 'contract_deposit': [ DepositSerializer(random.choice(Deposits)).data for _ in range(random.randint(1, 2))], # 금융 상품 리스트
-            # 'contract_saving': [ SavingSerializer(random.choice(Savings)).data for _ in range(random.randint(1, 3))], # 금융 상품 리스트
             
             'contract_deposit': list(set([ random.randrange(1,38) for _ in range(2) ])) , # 금융 상품 리스트
             'contract_saving': list(set([ random.randrange(1,62) for _ in range(random.randint(2, 3)) ])), # 금융 상품 리스트
-            # 'contract_deposit': '[' + ','.join([str(random.randrange(1,38)) for _ in range(random.randint(1, 2))]) + ']', # 금융 상품 리스트
-            # 'contract_saving': '[' +','.join([str(random.randrange(1,62)) for _ in range(random.randint(1, 3))]) + ']', # 금융 상품 리스트
-            'age': random.randint(1, 100),  # 나이
+
+            'age': random.randint(20, 70),  # 나이
             'money': random.randrange(1000000, 100000000, 1000000),    # 현재 가진 금액
-            'salary': random.randrange(1000000, 1500000000, 12000000), # 연봉
+            'salary': random.randrange(1000000, 150000000, 12000000), # 연봉
             'password': "a123456789!",
             'desire_amount_saving': random.randrange(50000, 3000000, 100000), #적금 랜덤
             'desire_amount_deposit': random.randrange(100000, 50000000, 1000000), # 예금 랜덤
