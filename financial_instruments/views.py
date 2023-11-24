@@ -393,8 +393,8 @@ def recommend_product_two(request):
     money = request.user.money
     salary = request.user.salary
     standard_deviation_age = 6
-    standard_deviation_money = 0000000
-    standard_deviation_salary = 10000000
+    standard_deviation_money = 1000000
+    standard_deviation_salary = 1000000
     is_not_similar_users = False
 
     similar_users = User.objects.filter(
